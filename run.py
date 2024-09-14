@@ -22,10 +22,10 @@ def main():
 
         for p in particles:
             p.boundary_collision([WIDTH, HEIGHT])
-            neighbours = p.measure(particles, 10)
+            # neighbours = p.measure(particles, 10)
 
-        solver.euler(dt)
-        render.draw(particles, (255, 255, 255))
+        solver.midpoint(dt)
+        render.draw(particles, (255, 0, 0))
 
 if __name__ == "__main__":
     main()

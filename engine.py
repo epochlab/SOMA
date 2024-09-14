@@ -20,3 +20,14 @@ class ODESolver:
     def euler(self, dt):
         next_state = self.state_vector() + self.derivatives() * dt
         self.set_state_vector(next_state)
+
+    def midpoint(self, dt):
+        current_state = self.state_vector()
+
+        k1 = self.derivatives()
+        x_mp = current_state + k1 * (dt / 2)
+        self.set_state_vector(x_mp)
+        
+        k2 = self.derivatives()
+        next_state = current_state + k2 * dt
+        self.set_state_vector(next_state)
