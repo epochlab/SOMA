@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import numpy as np
+
 import pygame
 from display import Display
 from particle import initialise
@@ -9,8 +11,7 @@ def main():
     WIDTH, HEIGHT = 1024, 576
     render = Display(WIDTH, HEIGHT)
 
-    particles = initialise(100, WIDTH, HEIGHT)
-
+    particles = initialise(50, WIDTH, HEIGHT)
     solver = ODESolver(particles)
 
     dt = 1/24
@@ -20,7 +21,8 @@ def main():
                 exit()
 
         for p in particles:
-            p.update_collision([WIDTH, HEIGHT])
+            p.boundary_collision([WIDTH, HEIGHT])
+            neighbours = p.measure(particles, 10)
 
         solver.euler(dt)
         render.draw(particles, (255, 255, 255))
