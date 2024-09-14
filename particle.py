@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import random
-import itertools
 import numpy as np
 
 class Particle:

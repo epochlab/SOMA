@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import numpy as np
-
 import pygame
 from display import Display
 from particle import initialise
@@ -25,7 +23,7 @@ def main():
             # neighbours = p.measure(particles, 10)
 
         solver.midpoint(dt)
-        render.draw(particles, (255, 0, 0))
+        render.draw(particles, (255, 255, 255))
 
 if __name__ == "__main__":
     main()

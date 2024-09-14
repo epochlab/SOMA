@@ -25,7 +25,7 @@ class ODESolver:
         current_state = self.state_vector()
 
         k1 = self.derivatives()
-        x_mp = current_state + k1 * (dt / 2)
+        x_mp = current_state + k1 * (dt/2)
         self.set_state_vector(x_mp)
         
         k2 = self.derivatives()
