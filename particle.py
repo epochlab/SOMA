@@ -10,7 +10,7 @@ class Particle:
         self.idx = Particle._next_idx
         Particle._next_idx += 1
 
-        self.mass = self.set_value(0, 1)
+        self.mass = self.set_value(0.5, 1)
         self.life = self.set_value(0, 1000)
         self.state = np.array([x, y, vx, vy, ax, ay], dtype=float)
 
@@ -37,7 +37,12 @@ class Particle:
     def apply_force(self, fx, fy):
         self.state[4:] += np.array([fx, fy]) / self.mass
 
-    def update(self, dt):
+    def apply_drag(self, drag_coefficient):
+        self.state[4] -= drag_coefficient * self.state[2]  # ax (drag in x)
+        self.state[5] -= drag_coefficient * self.state[3]  # ay (drag in y)
+
+    def update(self, dt, drag_coefficient=0.01):
+        self.apply_drag(drag_coefficient)
         self.state[2] += self.state[4] * dt  # vx
         self.state[3] += self.state[5] * dt  # vy
         self.state[0] += self.state[2] * dt  # pos x

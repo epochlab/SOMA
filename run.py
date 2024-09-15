@@ -24,7 +24,7 @@ def main():
             if p.life <= 0: particles.remove(p)
 
             p.interact(particles, r=100, strength=1)
-            p.update(dt)
+            p.update(dt, drag_coefficient=0.001)
             p.boundary_collision([WIDTH, HEIGHT])
 
         if len(particles) == 0: break
