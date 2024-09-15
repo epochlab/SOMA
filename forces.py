@@ -9,7 +9,7 @@ def attenuation(dist, r, falloff='sqr', k=1, alpha=1):
 
 def neighbour(particles, r):
     pos = np.array([p.state[:2] for p in particles if p.active])
-    if pos.ndim < 2: return None, None, None
+    if pos.size == 0: return None, None, None
     dist_matrix = np.sqrt(np.sum((pos[:, None, :] - pos[None, :, :]) ** 2, axis=-1))
     np.fill_diagonal(dist_matrix, r + 1) # Fix zero divide
     indices = np.column_stack(np.where(dist_matrix < r))
