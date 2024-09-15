@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import pygame
+
 from display import Display
 from particle import initialise
 from engine import ODESolver
@@ -19,10 +20,16 @@ def main():
                 exit()
 
         for p in particles:
+            p.update_life(dt)
+            if p.life <= 0: particles.remove(p)
+
             p.boundary_collision([WIDTH, HEIGHT])
             # neighbours = p.measure(particles, 10)
 
-        solver.midpoint(dt)
+        if len(particles) == 0:
+            break
+
+        solver.euler(dt)
         render.draw(particles, (255, 255, 255))
 
 if __name__ == "__main__":
