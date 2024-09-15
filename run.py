@@ -21,12 +21,12 @@ def main():
                 exit()
 
         # Cull dead particles
-        particles = [p for p in particles if p.life > 0]
+        particles = [p for p in particles if p.life >= 0]
         if not particles: break
 
         for p in particles:
             p.halflife(dt)
-            forces.interact(particles, r=100, strength=-1) # Strength | Pos (Attract), Neg (Repel)
+            forces.interact(particles, r=20, strength=-1) # Strength | Pos (Attract), Neg (Repel)
             p.update(dt, drag_coeff=0.001)
             p.boundary_collision([WIDTH, HEIGHT])
 
