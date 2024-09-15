@@ -5,6 +5,7 @@ import pygame
 from display import Display
 from particle import initialise
 from engine import ODESolver
+import forces
 
 def main():
     WIDTH, HEIGHT = 1024, 576
@@ -13,24 +14,24 @@ def main():
     particles = initialise(20, WIDTH, HEIGHT)
     solver = ODESolver(particles)
 
-    dt = 1/24
+    dt = 1/24 # Time-step
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
 
+        # Cull dead particles
+        particles = [p for p in particles if p.life > 0]
+        if not particles: break
+
         for p in particles:
             p.halflife(dt)
-            if p.life <= 0: particles.remove(p)
-
-            p.interact(particles, r=100, strength=1)
-            p.update(dt, drag_coefficient=0.001)
+            forces.interact(particles, r=100, strength=-1) # Strength | Pos (Attract), Neg (Repel)
+            p.update(dt, drag_coeff=0.001)
             p.boundary_collision([WIDTH, HEIGHT])
 
-        if len(particles) == 0: break
-
         solver.euler(dt)
-        render.draw(particles, (255, 255, 255))
+        render.draw([p for p in particles if p.active], (255, 255, 255))
 
 if __name__ == "__main__":
     main()
