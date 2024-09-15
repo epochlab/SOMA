@@ -10,8 +10,9 @@ class Particle:
         self.idx = Particle._next_idx
         Particle._next_idx += 1
 
+        self.mass = self.set_value(0, 1)
+        self.life = self.set_value(0, 1000)
         self.state = np.array([x, y, vx, vy, ax, ay], dtype=float)
-        self.life = 1000 * random.uniform(0, 1)
 
     @property
     def x(self): return self.state[0]
@@ -19,24 +20,45 @@ class Particle:
     @property
     def y(self): return self.state[1]
 
+    def set_value(self, min=0, max=1): return random.uniform(min, max)
+
     def state_vector(self): return self.state[:4]
 
     def set_state_vector(self, state): self.state[:4] = state
-    
+
     def derivatives(self): return self.state[2:]
 
-    def update_life(self, dt): self.life -= dt
+    def halflife(self, dt): self.life -= dt
 
     def boundary_collision(self, bounds):
-        if self.x < 0 or self.x > bounds[0]: self.state[2] *= -1
-        if self.y < 0 or self.y > bounds[1]: self.state[3] *= -1
+        if not (0 <= self.x <= bounds[0]): self.state[2] *= -1
+        if not (0 <= self.y <= bounds[1]): self.state[3] *= -1
 
-    def measure(self, particles, r):
-        pos = np.array([[p.x, p.y] for p in particles])
-        dist = np.sqrt(np.sum(pos[:, np.newaxis, :] - pos[np.newaxis, :, :] ** 2, axis=-1))
-        i, j = np.triu_indices(len(particles), k=1)
-        valid = dist[i, j] < r
-        return [(particles[i[k]], particles[j[k]]) for k in np.where(valid)[0]]
+    def apply_force(self, fx, fy):
+        self.state[4:] += np.array([fx, fy]) / self.mass
+
+    def update(self, dt):
+        self.state[2] += self.state[4] * dt  # vx
+        self.state[3] += self.state[5] * dt  # vy
+        self.state[0] += self.state[2] * dt  # pos x
+        self.state[1] += self.state[3] * dt  # pos y
+        self.state[4:] = 0 # Reset acceleration
+
+    def interact(self, particles, r, k=1, strength=1):
+        pos = np.array([p.state[:2] for p in particles])
+        if pos.ndim == 1: pos = np.expand_dims(pos, axis=0)
+
+        dist_matrix = np.sqrt(np.sum((pos[:, None, :] - pos[None, :, :]) ** 2, axis=-1))
+        np.fill_diagonal(dist_matrix, r + 1) # Fix zero divide
+        indices = np.column_stack(np.where(dist_matrix < r))
+        distances = dist_matrix[indices[:, 0], indices[:, 1]]
+        forces = k / distances ** 2
+
+        for (i, j), force, dist in zip(indices, forces, distances):
+            if dist > 0:
+                direction = (strength * (pos[i] - pos[j])) / dist_matrix[i, j]
+                particles[i].apply_force(force * direction[0] * particles[j].mass, force * direction[1] * particles[j].mass)
+                particles[j].apply_force(-force * direction[0] * particles[i].mass, -force * direction[1] * particles[i].mass)
 
 def initialise(N, w, h):
     return [Particle(random.uniform(0, w), random.uniform(0, h), random.uniform(-1, 1), random.uniform(-1, 1)) for _ in range(N)]

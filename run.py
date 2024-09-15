@@ -10,7 +10,7 @@ def main():
     WIDTH, HEIGHT = 1024, 576
     render = Display(WIDTH, HEIGHT)
 
-    particles = initialise(50, WIDTH, HEIGHT)
+    particles = initialise(20, WIDTH, HEIGHT)
     solver = ODESolver(particles)
 
     dt = 1/24
@@ -20,14 +20,14 @@ def main():
                 exit()
 
         for p in particles:
-            p.update_life(dt)
+            p.halflife(dt)
             if p.life <= 0: particles.remove(p)
 
+            p.interact(particles, r=100, strength=1)
+            p.update(dt)
             p.boundary_collision([WIDTH, HEIGHT])
-            # neighbours = p.measure(particles, 10)
 
-        if len(particles) == 0:
-            break
+        if len(particles) == 0: break
 
         solver.euler(dt)
         render.draw(particles, (255, 255, 255))
