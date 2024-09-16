@@ -39,18 +39,11 @@ class Particle:
     def apply_force(self, fx, fy):
         self.state[4:] += np.array([fx, fy]) / self.mass # a = F/m
 
-    def apply_drag(self, drag_coefficient):
-        self.state[4] -= drag_coefficient * self.state[2]  # ax (drag in x)
-        self.state[5] -= drag_coefficient * self.state[3]  # ay (drag in y)
+    def apply_drag(self, coeff):
+        self.state[4] -= coeff * self.state[2]  # ax (drag in x)
+        self.state[5] -= coeff * self.state[3]  # ay (drag in y)
 
-    def update(self, dt, drag_coeff=0.01):
-        self.apply_drag(drag_coeff)
-        velocity = self.state[2:4]
-        acceleration = self.state[4:6]
-        self.state[2:4] += acceleration * dt # update vx, vy
-        self.state[0:2] += velocity * dt  # update pos x, pos y
-        self.state[4:] = 0 # Reset acceleration
-        return np.concatenate([self.state[:4], acceleration])
+    def reset_acceleration(self): self.state[4:] = 0
 
 def initialise(N, w, h):
     return [Particle(random.uniform(0, w), random.uniform(0, h), random.uniform(-1, 1), random.uniform(-1, 1)) for _ in range(N)]

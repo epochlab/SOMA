@@ -24,10 +24,10 @@ def main():
         particles = [p for p in particles if p.life >= 0]
         if not particles: break
 
+        forces.interact(particles, r=20, strength=-1) # Strength | + (Attract), - (Repel)
         for p in particles:
             p.halflife(dt)
-            forces.interact(particles, r=20, strength=-1) # Strength | + (Attract), - (Repel)
-            p.update(dt, drag_coeff=0.001)
+            p.apply_drag(coeff=0.001)
             p.boundary_collision([WIDTH, HEIGHT])
 
         solver.euler(dt)

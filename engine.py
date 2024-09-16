@@ -20,6 +20,7 @@ class ODESolver:
     def euler(self, dt):
         next_state = self.state_vector() + self.derivatives() * dt
         self.set_state_vector(next_state)
+        for p in self.particles: p.reset_acceleration()
 
     def midpoint(self, dt):
         current_state = self.state_vector()
@@ -27,3 +28,4 @@ class ODESolver:
         self.set_state_vector(current_state + k1 * (dt/2))
         k2 = self.derivatives()
         self.set_state_vector(current_state + k2 * dt)
+        for p in self.particles: p.reset_acceleration()

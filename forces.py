@@ -2,10 +2,10 @@
 
 import numpy as np
 
-def attenuation(dist, r, falloff='sqr', k=1, alpha=1):
-    if falloff == 'linear': return np.clip((r - dist) / r, 0, 1)
-    if falloff == 'exp': return np.exp(-alpha * dist / r)
-    if falloff == 'sqr': return k / (dist**2 / r**2)
+def attenuation(dist, r, falloff='sqr', k=1, alpha=1, eps=1):
+    if falloff == 'linear': return (r - (dist + eps)) / r
+    if falloff == 'exp': return np.exp(-alpha * (dist + eps) / r)
+    if falloff == 'sqr': return k / ((dist**2 + eps) / r**2)
 
 def neighbour(particles, r):
     pos = np.array([p.state[:2] for p in particles if p.active])
@@ -19,7 +19,7 @@ def neighbour(particles, r):
 def interact(particles, r, strength=1, falloff='sqr'):
     pos, indices, distances = neighbour(particles, r)
     if indices is None: return
-    forces = attenuation(distances, r, falloff)
+    forces = np.clip(attenuation(distances, r, falloff), 0, 1)
     for (i, j), force, dist in zip(indices, forces, distances):
         if dist > 0:
             direction = (pos[j] - pos[i]) / dist
