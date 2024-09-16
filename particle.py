@@ -12,7 +12,7 @@ class Particle:
 
         self.active = True
         self.state = np.array([x, y, vx, vy, ax, ay], dtype=float)
-        self.mass = self.set_value(0.5, 1)
+        self.mass = self.set_value(0.8, 1)
         self.life = self.set_value(0, 1000)
 
     @classmethod
@@ -37,7 +37,7 @@ class Particle:
         if not (0 <= self.y <= bounds[1]): self.state[3] *= -1
 
     def apply_force(self, fx, fy):
-        self.state[4:] += np.array([fx, fy]) / self.mass
+        self.state[4:] += np.array([fx, fy]) / self.mass # a = F/m
 
     def apply_drag(self, drag_coefficient):
         self.state[4] -= drag_coefficient * self.state[2]  # ax (drag in x)
@@ -46,8 +46,8 @@ class Particle:
     def update(self, dt, drag_coeff=0.01):
         self.apply_drag(drag_coeff)
         velocity = self.state[2:4]
-        acceleration = self.state[4:6] # update vx, vy
-        self.state[2:4] += acceleration * dt
+        acceleration = self.state[4:6]
+        self.state[2:4] += acceleration * dt # update vx, vy
         self.state[0:2] += velocity * dt  # update pos x, pos y
         self.state[4:] = 0 # Reset acceleration
         return np.concatenate([self.state[:4], acceleration])
