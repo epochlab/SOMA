@@ -2,7 +2,7 @@
 
 import numpy as np
 
-def attenuation(dist, r, falloff='sqr', k=1, alpha=1, eps=1):
+def attenuation(dist, r, falloff='sqr', k=1, alpha=1, eps=0.001):
     if falloff == 'linear': return (r - (dist + eps)) / r
     if falloff == 'exp': return np.exp(-alpha * (dist + eps) / r)
     if falloff == 'sqr': return k / ((dist**2 + eps) / r**2)

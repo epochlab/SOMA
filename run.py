@@ -30,7 +30,7 @@ def main():
             p.apply_drag(coeff=0.001)
             p.boundary_collision([WIDTH, HEIGHT])
 
-        solver.euler(dt)
+        solver.midpoint(dt)
         render.draw([p for p in particles if p.active], (255, 255, 255))
 
 if __name__ == "__main__":
