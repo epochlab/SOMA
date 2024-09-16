@@ -50,6 +50,7 @@ class Particle:
         self.state[2:4] += acceleration * dt
         self.state[0:2] += velocity * dt  # update pos x, pos y
         self.state[4:] = 0 # Reset acceleration
+        return np.concatenate([self.state[:4], acceleration])
 
 def initialise(N, w, h):
     return [Particle(random.uniform(0, w), random.uniform(0, h), random.uniform(-1, 1), random.uniform(-1, 1)) for _ in range(N)]

@@ -26,7 +26,7 @@ def main():
 
         for p in particles:
             p.halflife(dt)
-            forces.interact(particles, r=20, strength=-1) # Strength | Pos (Attract), Neg (Repel)
+            forces.interact(particles, r=20, strength=-1) # Strength | + (Attract), - (Repel)
             p.update(dt, drag_coeff=0.001)
             p.boundary_collision([WIDTH, HEIGHT])
 
