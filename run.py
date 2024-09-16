@@ -11,7 +11,7 @@ def main():
     WIDTH, HEIGHT = 1024, 576
     render = Display(WIDTH, HEIGHT)
 
-    particles = initialise(100, WIDTH, HEIGHT)
+    particles = initialise(200, WIDTH, HEIGHT)
     solver = ODESolver(particles)
 
     dt = 1/24 # Time-step

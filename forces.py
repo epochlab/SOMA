@@ -20,9 +20,11 @@ def interact(particles, r, strength=1, falloff='sqr'):
     pos, indices, distances = neighbour(particles, r)
     if indices is None: return
     forces = np.clip(attenuation(distances, r, falloff), 0, 1)
-    for (i, j), force, dist in zip(indices, forces, distances):
-        if dist > 0:
-            direction = (pos[j] - pos[i]) / dist
-            magnitude = force * strength
-            particles[i].apply_force(magnitude * direction[0] * particles[j].mass, magnitude * direction[1] * particles[j].mass)
-            particles[j].apply_force(-magnitude * direction[0] * particles[i].mass, -magnitude * direction[1] * particles[i].mass)
+    dir = pos[indices[:, 1]] - pos[indices[:, 0]]
+    distances = distances[:, None]
+    magnitudes = forces * strength
+    norm_dir = dir / distances
+    force_contributions = magnitudes[:, None] * norm_dir
+    for (i, j), force in zip(indices, force_contributions):
+        particles[i].apply_force(force[0] * particles[j].mass, force[1] * particles[j].mass)
+        particles[j].apply_force(-force[0] * particles[i].mass, -force[1] * particles[i].mass)

@@ -28,6 +28,6 @@ class ODESolver:
         x_mp = current_state + k1 * (dt/2)
         self.set_state_vector(x_mp)
         k2 = self.derivatives()
-        next_state = current_state + k2 * dt
+        next_state = x_mp + k2 * dt # <-- Numerically incorrect
         self.set_state_vector(next_state)
         for p in self.particles: p.reset_acceleration()
