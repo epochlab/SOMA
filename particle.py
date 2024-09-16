@@ -33,15 +33,14 @@ class Particle:
         if self.life <= 0: self.active = False
 
     def boundary_collision(self, bounds):
-        if not (0 <= self.x <= bounds[0]): self.state[2] *= -1
-        if not (0 <= self.y <= bounds[1]): self.state[3] *= -1
+        self.state[2] *= -1 if not (0 <= self.x <= bounds[0]) else 1
+        self.state[3] *= -1 if not (0 <= self.y <= bounds[1]) else 1
 
     def apply_force(self, fx, fy):
         self.state[4:] += np.array([fx, fy]) / self.mass # a = F/m
 
     def apply_drag(self, coeff):
-        self.state[4] -= coeff * self.state[2]  # ax (drag in x)
-        self.state[5] -= coeff * self.state[3]  # ay (drag in y)
+        self.state[4:] -= coeff * self.state[2:4]
 
     def reset_acceleration(self): self.state[4:] = 0
 

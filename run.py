@@ -11,7 +11,7 @@ def main():
     WIDTH, HEIGHT = 1024, 576
     render = Display(WIDTH, HEIGHT)
 
-    particles = initialise(20, WIDTH, HEIGHT)
+    particles = initialise(100, WIDTH, HEIGHT)
     solver = ODESolver(particles)
 
     dt = 1/24 # Time-step
@@ -21,7 +21,7 @@ def main():
                 return
 
         # Cull dead particles
-        particles = [p for p in particles if p.life >= 0]
+        particles[:] = [p for p in particles if p.life >= 0]
         if not particles: break
 
         forces.interact(particles, r=20, strength=-1) # Strength | + (Attract), - (Repel)
