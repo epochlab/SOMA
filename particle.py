@@ -15,13 +15,14 @@ class Particle:
         self.mass = self.set_value(0.5, 1)
         self.life = self.set_value(0, 1000)
 
+    @classmethod
+    def set_value(self, min=0, max=1): return random.uniform(min, max)
+
     @property
     def x(self): return self.state[0]
 
     @property
     def y(self): return self.state[1]
-
-    def set_value(self, min=0, max=1): return random.uniform(min, max)
 
     def state_vector(self): return self.state[:4]
     def set_state_vector(self, state): self.state[:4] = state
@@ -44,8 +45,10 @@ class Particle:
 
     def update(self, dt, drag_coeff=0.01):
         self.apply_drag(drag_coeff)
-        self.state[2:4] += self.state[4:6] * dt  # update vx, vy
-        self.state[0:2] += self.state[2:4] * dt  # update pos x, pos y
+        velocity = self.state[2:4]
+        acceleration = self.state[4:6] # update vx, vy
+        self.state[2:4] += acceleration * dt
+        self.state[0:2] += velocity * dt  # update pos x, pos y
         self.state[4:] = 0 # Reset acceleration
 
 def initialise(N, w, h):

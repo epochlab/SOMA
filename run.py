@@ -18,7 +18,7 @@ def main():
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit()
+                return
 
         # Cull dead particles
         particles = [p for p in particles if p.life >= 0]
