@@ -2,32 +2,29 @@
 
 import numpy as np
 
-class ParticleField():
-    def __init__(self, N, w, h, dt):
-        self.state = np.column_stack((np.random.uniform(0, w, N),   # x
-                                      np.random.uniform(0, h, N),   # y
-                                      np.random.uniform(-1, 1, N),  # vx
-                                      np.random.uniform(-1, 1, N),  # vy
-                                      np.random.uniform(0, 2, N))   # life
-                                    )
-        
-        self.bounds = np.array([w, h])
+class ParticleField:
+    def __init__(self, n_particles, width, height, dt):
+        self.n_particles = n_particles
+        self.width = width
+        self.height = height
         self.dt = dt
-        self.halflife = 2.0 # secs
+
+        self.pos = np.random.rand(n_particles, 2) * [width, height]
+        self.vel = (np.random.rand(n_particles, 2) - 0.5) * 10
+        self.life = np.ones(n_particles)
+        
+        self.state = np.hstack((self.pos, self.vel, self.life[:, None]))
 
     def dynamics(self, state, t):
-        x, y, vx, vy, life = self.state[:,0], self.state[:,1], self.state[:,2], self.state[:,3], self.state[:,4]
+        pos, vel, life = state[:, :2], state[:, 2:4], state[:, 4]
 
-        vx, vy = self.boundary_collision(x, y, vx, vy)
+        # Boundary conditions
+        vel[(pos[:, 0] <= 0) | (pos[:, 0] >= self.width), 0] *= -1
+        vel[(pos[:, 1] <= 0) | (pos[:, 1] >= self.height), 1] *= -1
+        
+        # Derivatives
+        dv_dt = vel # vel
+        da_dt = np.zeros_like(vel) # accel
+        dl_dt = -np.ones_like(life) * self.dt * 20 # linear decay
 
-        life -= self.linear_decay(t)
-        life = np.clip(life, 0, np.inf)
-
-        return np.column_stack((vx, vy, np.zeros_like(vx), np.zeros_like(vy), life))
-    
-    def linear_decay(self, t): return (1 - t / self.halflife) * self.dt
-
-    def boundary_collision(self, x, y, vx, vy):
-        vx[(x < 0) | (x > self.bounds[0])] *= -1
-        vy[(y < 0) | (y > self.bounds[1])] *= -1
-        return vx, vy
+        return np.hstack((dv_dt, da_dt, dl_dt[:, None]))
