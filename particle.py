@@ -1,48 +1,34 @@
 #!/usr/bin/env python3
 
-import random
 import numpy as np
 
-class Particle:
-    _next_idx = 0
+class ParticleField():
+    def __init__(self, N, w, h, dt):
+        self.state = np.column_stack((np.random.uniform(0, w, N),   # x
+                                      np.random.uniform(0, h, N),   # y
+                                      np.random.uniform(-1, 1, N),  # vx
+                                      np.random.uniform(-1, 1, N),  # vy
+                                      np.random.uniform(1, 1, N)) # life
+                                    )
+        
+        self.bounds = np.array([w, h])
+        self.dt = dt
+        self.halflife = 2.0 # secs
 
-    def __init__(self, x, y, vx, vy, ax=0, ay=0):
-        self.idx = Particle._next_idx
-        Particle._next_idx += 1
+    def dynamics(self, state, t):
+        x, y, vx, vy, life = state[:,0], state[:,1], state[:,2], state[:,3], state[:,4]
 
-        self.active = True
-        self.state = np.array([x, y, vx, vy, ax, ay], dtype=float)
-        self.mass = self.set_value(0.8, 1)
-        self.life = self.set_value(0, 1000)
+        vx, vy = self.boundary_collision(x, y, vx, vy)
 
-    @classmethod
-    def set_value(self, min=0, max=1): return random.uniform(min, max)
+        factor = self.exp_decay()
+        life = np.maximum(0, life * factor)
 
-    @property
-    def x(self): return self.state[0]
+        return np.column_stack((vx, vy, np.zeros_like(vx), np.zeros_like(vy), np.zeros_like(life)))
+    
+    def linear_decay(self): return 1 * self.dt
+    def exp_decay(self): return np.exp(-(np.log(2)/self.halflife) * self.dt)
 
-    @property
-    def y(self): return self.state[1]
-
-    def state_vector(self): return self.state[:4]
-    def set_state_vector(self, state): self.state[:4] = state
-    def derivatives(self): return self.state[2:]
-
-    def halflife(self, dt): 
-        self.life -= dt
-        if self.life <= 0: self.active = False
-
-    def boundary_collision(self, bounds):
-        self.state[2] *= -1 if not (0 <= self.x <= bounds[0]) else 1
-        self.state[3] *= -1 if not (0 <= self.y <= bounds[1]) else 1
-
-    def apply_force(self, fx, fy):
-        self.state[4:] += np.array([fx, fy]) / self.mass # a = F/m
-
-    def apply_drag(self, coeff):
-        self.state[4:] -= coeff * self.state[2:4]
-
-    def reset_acceleration(self): self.state[4:] = 0
-
-def initialise(N, w, h):
-    return [Particle(random.uniform(0, w), random.uniform(0, h), random.uniform(-1, 1), random.uniform(-1, 1)) for _ in range(N)]
+    def boundary_collision(self, x, y, vx, vy):
+        vx[(x < 0) | (x > self.bounds[0])] *= -1
+        vy[(y < 0) | (y > self.bounds[1])] *= -1
+        return vx, vy

@@ -1,33 +1,32 @@
 #!/usr/bin/env python3
 
-import numpy as np
-
 class ODESolver:
-    def __init__(self, particles):
-        self.particles = particles
-        self.ndim = len(particles) * 4
+    def __init__(self, f):
+        self.f = f
+       
+    def reset(self, x_start, t_start=0.0):
+        self.x = x_start
+        self.t = t_start
 
-    def state_vector(self):
-        return np.concatenate([p.state_vector() for p in self.particles])
+    def compute(self, dt, solver="euler"):
+        if solver == "euler":
+            self.x += self.f(self.x, self.t) * dt
+        elif solver == "mdp":
+            x_mp = self.x + self.f(self.x, self.t) * dt/2
+            self.x += self.f(x_mp, self.t + dt/2) * dt
+        elif solver == "rk2":
+            k1 = self.f(self.x, self.t)
+            k2 = self.f(self.x + k1 * dt, self.t + dt)
+            self.x += 0.5 * (k1 + k2) * dt
+        elif solver == "rk4":
+            k1 = self.f(self.x, self.t)
+            k2 = self.f(self.x + k1 * dt/2, self.t + dt/2)
+            k3 = self.f(self.x + k2 * dt/2, self.t + dt/2)
+            k4 = self.f(self.x + k3 * dt, self.t + dt)
+            self.x += 1/6 * (k1 + 2*k2 + 2*k3 + k4) * dt
+        else:
+            raise ValueError("Invalid solver method")
 
-    def set_state_vector(self, state):
-        for i, p in enumerate(self.particles):
-            p.set_state_vector(state[i*4:(i+1)*4])
+        self.t += dt
 
-    def derivatives(self):
-        return np.concatenate([p.derivatives() for p in self.particles])
-
-    def euler(self, dt):
-        next_state = self.state_vector() + self.derivatives() * dt
-        self.set_state_vector(next_state)
-        for p in self.particles: p.reset_acceleration()
-
-    def midpoint(self, dt):
-        current_state = self.state_vector()
-        k1 = self.derivatives()
-        x_mp = current_state + k1 * (dt/2)
-        self.set_state_vector(x_mp)
-        k2 = self.derivatives()
-        next_state = x_mp + k2 * dt # <-- Numerically incorrect
-        self.set_state_vector(next_state)
-        for p in self.particles: p.reset_acceleration()
+        return self.x, self.t

@@ -9,6 +9,6 @@ class Display(object):
 
     def draw(self, particles, col):
         self.surface.fill((0, 0, 0))
-        for p in particles:
-            pygame.draw.circle(self.surface, col, (int(p.x), int(p.y)), 2)
+        for p in particles[:,:2]: 
+            pygame.draw.circle(self.surface, col, (int(p[0]), int(p[1])), 2) # Render x y positions
         pygame.display.flip()
