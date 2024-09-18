@@ -11,18 +11,22 @@ def main():
     render = Display(WIDTH, HEIGHT)
     dt = 1/24
 
-    P = ParticleField(10, WIDTH, HEIGHT, dt)
+    P = ParticleField(5, WIDTH, HEIGHT, dt)
     solver = ODESolver(f=P.dynamics)
     solver.reset(P.state, t_start=0.0)
 
+    i = 0
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
 
-        state, _ = solver.compute(dt, "euler") # Simulate
-        render.draw(state, (255, 255, 255))
-        P.state = state
+        next_state, _ = solver.compute(dt, "euler") # Simulate
+        render.draw(next_state, (255, 255, 255))
+        P.state = next_state
+
+        i += 1
+        if i>100: break
 
 if __name__ == "__main__":
     main()

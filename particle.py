@@ -8,7 +8,7 @@ class ParticleField():
                                       np.random.uniform(0, h, N),   # y
                                       np.random.uniform(-1, 1, N),  # vx
                                       np.random.uniform(-1, 1, N),  # vy
-                                      np.random.uniform(1, 1, N)) # life
+                                      np.random.uniform(0, 2, N))   # life
                                     )
         
         self.bounds = np.array([w, h])
@@ -16,17 +16,16 @@ class ParticleField():
         self.halflife = 2.0 # secs
 
     def dynamics(self, state, t):
-        x, y, vx, vy, life = state[:,0], state[:,1], state[:,2], state[:,3], state[:,4]
+        x, y, vx, vy, life = self.state[:,0], self.state[:,1], self.state[:,2], self.state[:,3], self.state[:,4]
 
         vx, vy = self.boundary_collision(x, y, vx, vy)
 
-        factor = self.exp_decay()
-        life = np.maximum(0, life * factor)
+        life -= self.linear_decay(t)
+        life = np.clip(life, 0, np.inf)
 
-        return np.column_stack((vx, vy, np.zeros_like(vx), np.zeros_like(vy), np.zeros_like(life)))
+        return np.column_stack((vx, vy, np.zeros_like(vx), np.zeros_like(vy), life))
     
-    def linear_decay(self): return 1 * self.dt
-    def exp_decay(self): return np.exp(-(np.log(2)/self.halflife) * self.dt)
+    def linear_decay(self, t): return (1 - t / self.halflife) * self.dt
 
     def boundary_collision(self, x, y, vx, vy):
         vx[(x < 0) | (x > self.bounds[0])] *= -1
