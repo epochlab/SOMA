@@ -18,7 +18,7 @@ class Display(object):
             pygame.draw.circle(self.surface, col, (x, y), 2)
         pygame.display.flip()
 
-    def terminal_feedback(self, state):
+    def terminal_feedback(self, state, dt):
         N = state.shape[0]
         pos = state[:, :2].cpu().numpy()
         vel = state[:, 2:4].cpu().numpy()
@@ -27,7 +27,11 @@ class Display(object):
         os.system('cls' if os.name == 'nt' else 'clear')
 
         print("SOMA | Particle Sim\n")
+
         print(f"Resolution: {self.width} x {self.height}")
+        print(f"FPS: {int(1/dt)}")
+        print(f"Delta (dt): {dt:.4f}\n")
+
         print(f"N Particles: {N}\n")
 
         print(f"{'ID':<6} | {'Pos (x,y)':<20} | {'Vel (vx,vy)':<20} | {'Life':<10}")
@@ -35,5 +39,5 @@ class Display(object):
 
         for i in range(N):
             print(f"{i:<6} | ({pos[i][0]:<8.3f}, {pos[i][1]:<8.3f}) | "
-                f"({vel[i][0]:<8.3f}, {vel[i][1]:<8.3f}) | "
-                f"{life[i]:.4f}")
+                  f"({vel[i][0]:<8.3f}, {vel[i][1]:<8.3f}) | "
+                  f"{life[i]:.2f}")

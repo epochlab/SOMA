@@ -8,8 +8,6 @@ from engine import ODESolver
 from particle import ParticleField
 from libtools import device_mapper
 
-# torch.set_printoptions(precision=4, sci_mode=False) 
-
 DEVICE = device_mapper()
 print(f"Device: {str(DEVICE).upper()}")
 
@@ -33,8 +31,8 @@ def main():
 
         P.state[:] = next_state
 
-        render.draw(next_state[:, :2].cpu().numpy(), (255, 255, 255))
-        render.terminal_feedback(P.state)
+        render.terminal_feedback(P.state, dt)
+        render.draw(P.state[:, :2].cpu().numpy(), (255, 255, 255))
         clock.tick(FPS)
 
 if __name__ == "__main__":
