@@ -8,7 +8,7 @@ from engine import ODESolver
 from particle import ParticleField
 from libtools import device_mapper
 
-torch.set_printoptions(precision=4, sci_mode=False) 
+# torch.set_printoptions(precision=4, sci_mode=False) 
 
 DEVICE = device_mapper()
 print(f"Device: {str(DEVICE).upper()}")
@@ -30,11 +30,11 @@ def main():
 
         with torch.no_grad():
             next_state, _ = solver.compute(dt, "euler")
-            
-        render.draw(next_state[:, :2].cpu().numpy(), (255, 255, 255))
-        P.state[:] = next_state
-        # print(P.state.cpu())
 
+        P.state[:] = next_state
+
+        render.draw(next_state[:, :2].cpu().numpy(), (255, 255, 255))
+        render.terminal_feedback(P.state)
         clock.tick(FPS)
 
 if __name__ == "__main__":
