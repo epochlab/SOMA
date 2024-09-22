@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
 class ODESolver:
-    def __init__(self, f):
+    def __init__(self, f, device):
         self.f = f
+        self.device = device
        
     def reset(self, x_start, t_start=0.0):
-        self.x = x_start
+        self.x = x_start.to(self.device)
         self.t = t_start
 
     def compute(self, dt, solver="euler"):

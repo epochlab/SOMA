@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 
-import numpy as np
+import torch
 
 class ParticleField:
-    def __init__(self, N, width, height, dt):
+    def __init__(self, N, width, height, dt, device):
         self.N = N
         self.width = width
         self.height = height
         self.dt = dt
 
-        self.pos = np.random.rand(N, 2) * [width, height]
-        self.vel = (np.random.rand(N, 2) - 0.5) * 1000
-        self.life = np.ones(N)
+        self.pos = (torch.rand(N, 2) * torch.tensor([width, height])).to(device)
+        self.vel = (torch.rand(N, 2) - 0.5).to(device) * 1000
+        self.life = torch.ones(N).to(device)
         
-        self.state = np.hstack((self.pos, self.vel, self.life[:, None]))
+        self.state = torch.cat((self.pos, self.vel, self.life[:, None]), dim=1)
 
     def dynamics(self, state, t):
         pos, vel, life = state[:, :2], state[:, 2:4], state[:, 4]
@@ -21,12 +21,7 @@ class ParticleField:
         vel = self.boundary_collisions(vel, pos)
         life -= self.dt
 
-        # Derivatives
-        dv_dt = vel # vel
-        da_dt = np.zeros_like(vel) # accel
-        dl_dt = life
-
-        return np.hstack((dv_dt, da_dt, dl_dt[:, None]))
+        return torch.cat((vel, torch.zeros_like(vel), life[:, None]), dim=1) # dx_dt | vel, accel, life
         
     def boundary_collisions(self, vel, pos):
         mask_x = (pos[:, 0] <= 0) | (pos[:, 0] >= self.width)

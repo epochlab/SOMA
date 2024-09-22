@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 
-import numpy as np
 import pygame
+import torch
 
 from display import Display
 from engine import ODESolver
 from particle import ParticleField
+from libtools import device_mapper
 
-np.set_printoptions(precision=2, suppress=True)
+torch.set_printoptions(precision=4, sci_mode=False) 
+
+DEVICE = device_mapper()
+print(f"Device: {str(DEVICE).upper()}")
 
 def main():
     WIDTH, HEIGHT, FPS = 1024, 576, 120
@@ -15,8 +19,8 @@ def main():
     clock = pygame.time.Clock()
     dt = 1/FPS
 
-    P = ParticleField(10, WIDTH, HEIGHT, dt)
-    solver = ODESolver(f=P.dynamics)
+    P = ParticleField(100, WIDTH, HEIGHT, dt, DEVICE)
+    solver = ODESolver(f=P.dynamics, device=DEVICE)
     solver.reset(P.state, t_start=0.0)
 
     while True:
@@ -24,10 +28,12 @@ def main():
             if event.type == pygame.QUIT:
                 return
 
-        next_state, _ = solver.compute(dt, "euler")
-        render.draw(next_state[:, :2], (255, 255, 255))
+        with torch.no_grad():
+            next_state, _ = solver.compute(dt, "euler")
+            
+        render.draw(next_state[:, :2].cpu().numpy(), (255, 255, 255))
         P.state[:] = next_state
-        print(P.state)
+        print(P.state.cpu())
 
         clock.tick(FPS)
 
