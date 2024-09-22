@@ -28,6 +28,4 @@ class ParticleField:
         mask_y = (pos[:, 1] <= 0) | (pos[:, 1] >= self.height)
         vel[mask_x, 0] *= -1
         vel[mask_y, 1] *= -1
-        pos[mask_x, 0] = torch.clamp(pos[mask_x, 0], 0, self.width)
-        pos[mask_y, 1] = torch.clamp(pos[mask_y, 1], 0, self.height)
         return vel

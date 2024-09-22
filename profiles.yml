@@ -2,9 +2,9 @@ elements:
   - name: Hydrogen
     symbol: H
     atomic_number: 1
+    atomic_weight: 1.008
     protons: 1
     electrons: 1
-    atomic_weight: 1.008
     density: 0.08988
     electronegativity: 2.20
     atomic_radius: 53
