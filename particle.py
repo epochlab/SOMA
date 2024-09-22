@@ -18,13 +18,16 @@ class ParticleField:
     def dynamics(self, state, t):
         pos, vel, life = state[:, :2], state[:, 2:4], state[:, 4]
 
-        # Boundary conditions
-        vel[(pos[:, 0] <= 0) | (pos[:, 0] >= self.width), 0] *= -1
-        vel[(pos[:, 1] <= 0) | (pos[:, 1] >= self.height), 1] *= -1
-        
+        vel = self.boundary_collisions(vel, pos)
+
         # Derivatives
         dv_dt = vel # vel
         da_dt = np.zeros_like(vel) # accel
         dl_dt = -np.ones_like(life) * self.dt * 20 # linear decay
 
         return np.hstack((dv_dt, da_dt, dl_dt[:, None]))
+    
+    def boundary_collisions(self, vel, pos):
+        vel[(pos[:, 0] <= 0) | (pos[:, 0] >= self.width), 0] *= -1
+        vel[(pos[:, 1] <= 0) | (pos[:, 1] >= self.height), 1] *= -1
+        return vel
