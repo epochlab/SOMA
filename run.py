@@ -25,10 +25,10 @@ def main():
                 return
 
         next_state, _ = solver.compute(dt, "euler")
-        render.draw(next_state, (255, 255, 255))
+        render.draw(next_state[:, :2], (255, 255, 255))
         P.state[:] = next_state
         print(P.state)
-        
+
         clock.tick(FPS)
 
 if __name__ == "__main__":

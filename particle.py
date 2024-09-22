@@ -19,7 +19,7 @@ class ParticleField:
         pos, vel, life = state[:, :2], state[:, 2:4], state[:, 4]
 
         vel = self.boundary_collisions(vel, pos)
-        life = self.linear_decay(life)
+        life -= self.dt
 
         # Derivatives
         dv_dt = vel # vel
@@ -27,10 +27,10 @@ class ParticleField:
         dl_dt = life
 
         return np.hstack((dv_dt, da_dt, dl_dt[:, None]))
-    
-    def linear_decay(self, life): return -np.ones_like(life) * self.dt
         
     def boundary_collisions(self, vel, pos):
-        vel[(pos[:, 0] <= 0) | (pos[:, 0] >= self.width), 0] *= -1
-        vel[(pos[:, 1] <= 0) | (pos[:, 1] >= self.height), 1] *= -1
+        mask_x = (pos[:, 0] <= 0) | (pos[:, 0] >= self.width)
+        mask_y = (pos[:, 1] <= 0) | (pos[:, 1] >= self.height)
+        vel[mask_x, 0] *= -1
+        vel[mask_y, 1] *= -1
         return vel
