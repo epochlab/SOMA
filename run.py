@@ -19,7 +19,7 @@ def main():
     clock = pygame.time.Clock()
     dt = 1/FPS
 
-    P = ParticleField(100, WIDTH, HEIGHT, dt, DEVICE)
+    P = ParticleField(10, WIDTH, HEIGHT, dt, DEVICE)
     solver = ODESolver(f=P.dynamics, device=DEVICE)
     solver.reset(P.state, t_start=0.0)
 
@@ -33,7 +33,7 @@ def main():
             
         render.draw(next_state[:, :2].cpu().numpy(), (255, 255, 255))
         P.state[:] = next_state
-        print(P.state.cpu())
+        # print(P.state.cpu())
 
         clock.tick(FPS)
 
