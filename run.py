@@ -1,24 +1,29 @@
 #!/usr/bin/env python3
 
+from dataclasses import dataclass
+
 import pygame
 import torch
 
-from display import Display
+from libtools import device_mapper
+from display import Display, terminal_feedback
 from engine import ODESolver
 from particle import ParticleField
-from libtools import device_mapper
 
-DEVICE = device_mapper()
-print(f"Device: {str(DEVICE).upper()}")
-
-def main():
-    WIDTH, HEIGHT, FPS = 1024, 576, 120
-    render = Display(WIDTH, HEIGHT)
-    clock = pygame.time.Clock()
+@dataclass
+class HyperConfig:
+    DEVICE = device_mapper()
+    width, height, FPS = 1024, 576, 120
     dt = 1/FPS
 
-    P = ParticleField(10, WIDTH, HEIGHT, dt, DEVICE)
-    solver = ODESolver(f=P.dynamics, device=DEVICE)
+def main():
+    config = HyperConfig()
+
+    render = Display(config.width, config.height)
+    clock = pygame.time.Clock()
+
+    P = ParticleField(10, config.width, config.height, config.dt, config.DEVICE)
+    solver = ODESolver(f=P.dynamics, device=config.DEVICE)
     solver.reset(P.state, t_start=0.0)
 
     while True:
@@ -27,13 +32,13 @@ def main():
                 return
 
         with torch.no_grad():
-            next_state, _ = solver.compute(dt, "euler")
-
+            next_state, _ = solver.compute(config.dt, "euler")
+        
         P.state[:] = next_state
 
-        render.terminal_feedback(P.state, dt)
+        terminal_feedback(P.state, config)
         render.draw(P.state[:, :2].cpu().numpy(), (255, 255, 255))
-        clock.tick(FPS)
+        clock.tick(config.FPS)
 
 if __name__ == "__main__":
     main()

@@ -13,31 +13,31 @@ class Display(object):
 
     def draw(self, pts, col):
         self.surface.fill((0, 0, 0))
-        for p in pts: 
+        for p in pts[:, :2]:
             x, y = int(p[0]), int(p[1])
             pygame.draw.circle(self.surface, col, (x, y), 2)
         pygame.display.flip()
 
-    def terminal_feedback(self, state, dt):
-        N = state.shape[0]
-        pos = state[:, :2].cpu().numpy()
-        vel = state[:, 2:4].cpu().numpy()
-        life = state[:, 4].cpu().numpy()
+def terminal_feedback(state, config):
+    N = state.shape[0]
+    pos = state[:, :2].cpu().numpy()
+    vel = state[:, 2:4].cpu().numpy()
+    life = state[:, 4].cpu().numpy()
 
-        os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('cls' if os.name == 'nt' else 'clear')
 
-        print("SOMA | Particle Sim\n")
+    print("SOMA | Particle Sim")
+    print("-" * 20)
+    print(f"Device: {str(config.DEVICE).upper()}")
+    print(f"Resolution: {config.width} x {config.height}")
+    print(f"FPS: {int(1/config.dt)}")
+    print(f"Delta (dt): {config.dt:.4f}")
+    print(f"N Particles: {N}\n")
 
-        print(f"Resolution: {self.width} x {self.height}")
-        print(f"FPS: {int(1/dt)}")
-        print(f"Delta (dt): {dt:.4f}\n")
+    print(f"{'ID':<6} | {'Pos (x,y)':<20} | {'Vel (vx,vy)':<20} | {'Life':<10}")
+    print("-" * 70)
 
-        print(f"N Particles: {N}\n")
-
-        print(f"{'ID':<6} | {'Pos (x,y)':<20} | {'Vel (vx,vy)':<20} | {'Life':<10}")
-        print("-" * 70)
-
-        for i in range(N):
-            print(f"{i:<6} | ({pos[i][0]:<8.3f}, {pos[i][1]:<8.3f}) | "
-                  f"({vel[i][0]:<8.3f}, {vel[i][1]:<8.3f}) | "
-                  f"{life[i]:.2f}")
+    for i in range(N):
+        print(f"{i:<6} | ({pos[i][0]:<8.3f}, {pos[i][1]:<8.3f}) | "
+                f"({vel[i][0]:<8.3f}, {vel[i][1]:<8.3f}) | "
+                f"{life[i]:.2f}")
