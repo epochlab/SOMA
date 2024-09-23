@@ -18,11 +18,10 @@ class Display(object):
             pygame.draw.circle(self.surface, col, (x, y), 2)
         pygame.display.flip()
 
-def terminal_feedback(state, config):
+def terminal_feedback(state, config, i):
     N = state.shape[0]
     pos = state[:, :2].cpu().numpy()
     vel = state[:, 2:4].cpu().numpy()
-    life = state[:, 4].cpu().numpy()
 
     os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -32,12 +31,12 @@ def terminal_feedback(state, config):
     print(f"Resolution: {config.width} x {config.height}")
     print(f"FPS: {int(1/config.dt)}")
     print(f"Delta (dt): {config.dt:.4f}")
-    print(f"N Particles: {N}\n")
+    print(f"N Particles: {N}")
+    print(f"Frame: {i}\n")
 
-    print(f"{'ID':<6} | {'Pos (x,y)':<20} | {'Vel (vx,vy)':<20} | {'Life':<10}")
-    print("-" * 70)
+    print(f"{'ID':<6} | {'Pos (x,y)':<20} | {'Vel (vx,vy)':<20}")
+    print("-" * 60)
 
     for i in range(N):
         print(f"{i:<6} | ({pos[i][0]:<8.3f}, {pos[i][1]:<8.3f}) | "
-                f"({vel[i][0]:<8.3f}, {vel[i][1]:<8.3f}) | "
-                f"{life[i]:.2f}")
+                f"({vel[i][0]:<8.3f}, {vel[i][1]:<8.3f})")

@@ -11,7 +11,7 @@ class ODESolver:
 
     def compute(self, dt, solver="euler"):
         if solver == "euler":
-            self.x += self.f(self.x, self.t) * dt
+            self.x[:,:4] += self.f(self.x[:,:4], self.t) * dt
         elif solver == "mdp":
             x_mp = self.x + self.f(self.x, self.t) * dt/2
             self.x += self.f(x_mp, self.t + dt/2) * dt

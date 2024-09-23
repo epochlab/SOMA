@@ -11,18 +11,15 @@ class ParticleField:
 
         self.pos = (torch.rand(N, 2) * torch.tensor([width, height])).to(device)
         self.vel = (torch.rand(N, 2) - 0.5).to(device) * 1000
-        # self.life = torch.ones(N).to(device)
-        self.life = torch.rand(N).to(device)
         
-        self.state = torch.cat((self.pos, self.vel, self.life[:, None]), dim=1)
+        self.state = torch.cat((self.pos, self.vel), dim=1)
 
     def dynamics(self, state, t):
-        pos, vel, life = state[:, :2], state[:, 2:4], state[:, 4]
+        pos, vel = state[:, :2], state[:, 2:4]
 
         vel = self.boundary_collisions(vel, pos)
-        life -= self.dt
 
-        return torch.cat((vel, torch.zeros_like(vel), life[:, None]), dim=1) # dx_dt | vel, accel, life
+        return torch.cat((vel, torch.zeros_like(vel)), dim=1) # dx_dt | p:vel, v:accel
         
     def boundary_collisions(self, vel, pos):
         mask_x = (pos[:, 0] <= 0) | (pos[:, 0] >= self.width)

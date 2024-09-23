@@ -26,23 +26,20 @@ def main():
     solver = ODESolver(f=P.dynamics, device=config.DEVICE)
     solver.reset(P.state, t_start=0.0)
 
+    i = 0
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
 
-        with torch.no_grad():
-            next_state, _ = solver.compute(config.dt, "euler")
-        
-        P.state[:] = next_state # In-place operation
-
-        # mask = next_state[:,4] >= 0
-        # P.state = next_state[mask]
-        # if P.state.size(0) == 0: break
-
-        terminal_feedback(P.state, config)
+        terminal_feedback(P.state, config, i)
         render.draw(P.state[:, :2].cpu().numpy(), (255, 255, 255))
+
+        with torch.no_grad():
+            P.state[:], _ = solver.compute(config.dt, "euler")
+
         clock.tick(config.FPS)
+        i += 1
 
 if __name__ == "__main__":
     main()
