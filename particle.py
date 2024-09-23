@@ -8,6 +8,7 @@ class ParticleField:
         self.width = width
         self.height = height
         self.dt = dt
+        self.device = device
 
         self.name = profile['name']
         self.symbol = profile['symbol']

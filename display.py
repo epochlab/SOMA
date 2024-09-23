@@ -18,20 +18,20 @@ class Display(object):
             pygame.draw.circle(self.surface, col, (x, y), 2)
         pygame.display.flip()
 
-def terminal_feedback(state, config, i):
-    N = state.shape[0]
-    pos = state[:, :2].cpu().numpy()
-    vel = state[:, 2:4].cpu().numpy()
+def terminal_feedback(P, i):
+    N = P.state.shape[0]
+    pos = P.state[:, :2].cpu().numpy()
+    vel = P.state[:, 2:4].cpu().numpy()
 
     os.system('cls' if os.name == 'nt' else 'clear')
 
     print("SOMA | Particle Sim")
     print("-" * 20)
-    print(f"Device: {str(config.DEVICE).upper()}")
-    print(f"Resolution: {config.width} x {config.height}")
-    print(f"FPS: {int(1/config.dt)}")
-    print(f"Delta (dt): {config.dt:.4f}")
-    print(f"N Particles: {N}")
+    print(f"Device: {str(P.device).upper()}")
+    print(f"Resolution: {P.width} x {P.height}")
+    print(f"FPS: {int(1/P.dt)}")
+    print(f"Delta (dt): {P.dt:.4f}")
+    print(f"N Particles: {P.N}")
     print(f"Frame: {i}\n")
 
     print(f"{'ID':<6} | {'Pos (x,y)':<20} | {'Vel (vx,vy)':<20}")

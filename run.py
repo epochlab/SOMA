@@ -10,20 +10,16 @@ from display import Display, terminal_feedback
 from engine import ODESolver
 from particle import ParticleField
 
-@dataclass
-class HyperConfig:
-    DEVICE = device_mapper()
-    width, height, FPS = 1024, 576, 120
-    dt = 1/FPS
+DEVICE = device_mapper()
+WIDTH, HEIGHT, FPS = 1024, 576, 120
+dt = 1/FPS
 
 def main():
-    config = HyperConfig()
-
-    render = Display(config.width, config.height)
+    render = Display(WIDTH, HEIGHT)
     clock = pygame.time.Clock()
 
-    P = ParticleField(10, load_profile('helium'), config.width, config.height, config.dt, config.DEVICE)
-    solver = ODESolver(f=P.dynamics, device=config.DEVICE)
+    P = ParticleField(10, load_profile('helium'), WIDTH, HEIGHT, dt, DEVICE)
+    solver = ODESolver(f=P.dynamics, device=DEVICE)
     solver.reset(P.state, t_start=0.0)
 
     i = 0
@@ -32,13 +28,13 @@ def main():
             if event.type == pygame.QUIT:
                 return
 
-        terminal_feedback(P.state, config, i)
+        terminal_feedback(P, i)
         render.draw(P.state[:, :2].cpu().numpy(), (255, 255, 255))
 
         with torch.no_grad():
-            P.state[:], _ = solver.compute(config.dt, "euler")
+            P.state[:], _ = solver.compute(dt, "euler")
 
-        clock.tick(config.FPS)
+        clock.tick(FPS)
         i += 1
 
 if __name__ == "__main__":
