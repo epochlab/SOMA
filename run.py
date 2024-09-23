@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import pygame
 import torch
 
-from libtools import device_mapper
+from libtools import device_mapper, load_profile
 from display import Display, terminal_feedback
 from engine import ODESolver
 from particle import ParticleField
@@ -22,7 +22,7 @@ def main():
     render = Display(config.width, config.height)
     clock = pygame.time.Clock()
 
-    P = ParticleField(10, config.width, config.height, config.dt, config.DEVICE)
+    P = ParticleField(10, load_profile('helium'), config.width, config.height, config.dt, config.DEVICE)
     solver = ODESolver(f=P.dynamics, device=config.DEVICE)
     solver.reset(P.state, t_start=0.0)
 

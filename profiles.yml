@@ -1,5 +1,5 @@
 elements:
-  - name: Hydrogen
+  - name: hydrogen
     symbol: H
     atomic_number: 1
     atomic_weight: 1.008
@@ -8,3 +8,12 @@ elements:
     density: 0.08988
     electronegativity: 2.20
     atomic_radius: 53
+  - name: helium
+    symbol: He
+    atomic_number: 2
+    atomic_weight: 4.002602
+    protons: 2
+    electrons: 2
+    density: 0.1786
+    electronegativity: 0.00
+    atomic_radius: 31
