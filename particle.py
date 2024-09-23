@@ -10,6 +10,9 @@ class ParticleField:
         self.dt = dt
         self.device = device
 
+        self.pos = (torch.rand(N, 2) * torch.tensor([width, height])).to(device)
+        self.vel = (torch.rand(N, 2) - 0.5).to(device) * 1000
+
         self.name = profile['name']
         self.symbol = profile['symbol']
         self.Z = profile['atomic_number']
@@ -19,17 +22,12 @@ class ParticleField:
         self.A = profile['density']
         self.X = profile['electronegativity']
         self.a0 = profile['atomic_radius']
-
-        self.pos = (torch.rand(N, 2) * torch.tensor([width, height])).to(device)
-        self.vel = (torch.rand(N, 2) - 0.5).to(device) * 1000
         
         self.state = torch.cat((self.pos, self.vel), dim=1)
 
     def dynamics(self, state, t):
         pos, vel = state[:, :2], state[:, 2:4]
-
         vel = self.boundary_collisions(vel, pos)
-        
         return torch.cat((vel, torch.zeros_like(vel)), dim=1) # dx_dt | p:vel, v:accel
         
     def boundary_collisions(self, vel, pos):
