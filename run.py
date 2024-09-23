@@ -34,7 +34,11 @@ def main():
         with torch.no_grad():
             next_state, _ = solver.compute(config.dt, "euler")
         
-        P.state[:] = next_state
+        P.state[:] = next_state # In-place operation
+
+        # mask = next_state[:,4] >= 0
+        # P.state = next_state[mask]
+        # if P.state.size(0) == 0: break
 
         terminal_feedback(P.state, config)
         render.draw(P.state[:, :2].cpu().numpy(), (255, 255, 255))

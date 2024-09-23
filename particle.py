@@ -11,7 +11,8 @@ class ParticleField:
 
         self.pos = (torch.rand(N, 2) * torch.tensor([width, height])).to(device)
         self.vel = (torch.rand(N, 2) - 0.5).to(device) * 1000
-        self.life = torch.ones(N).to(device)
+        # self.life = torch.ones(N).to(device)
+        self.life = torch.rand(N).to(device)
         
         self.state = torch.cat((self.pos, self.vel, self.life[:, None]), dim=1)
 
