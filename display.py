@@ -15,7 +15,10 @@ class Display(object):
 
     def draw(self, state):
         self.surface.fill((0, 0, 0))
-        col = attrib_Cd(state, 'turbo')
+
+        speed = torch.norm(state[:,2:], dim=1) / 1e3 # Fix static mapping!!
+        col = attrib_Cd(speed, 'magma')
+
         for i, p in enumerate(state[:,:2]):
             x, y = int(p[0]), int(p[1])
             # pygame.draw.circle(self.surface, (255,255,255), (x, y), 2)
@@ -47,9 +50,7 @@ def terminal_feedback(pf, i):
         print(f"{i:<6} | ({pos[i][0]:<8.3f}, {pos[i][1]:<8.3f}) | "
               f"({vel[i][0]:<8.3f}, {vel[i][1]:<8.3f})")
         
-def attrib_Cd(pts, col):
-    attrib = torch.norm(pts[:,2:], dim=1)
-    norm_attrib = 1 - (attrib / 500)
+def attrib_Cd(attrib, col):
     cmap = cm.get_cmap(col)
-    colors = cmap(norm_attrib.cpu().numpy())[:, :3]
+    colors = cmap(attrib.cpu().numpy())[:, :3]
     return (colors * 255).astype('uint8')

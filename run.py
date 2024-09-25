@@ -4,10 +4,10 @@ import sys
 import pygame
 import torch
 
-from libtools import device_mapper, load_profile
-from display import Display, terminal_feedback
-from engine import ODESolver
 from particle import ParticleField
+from engine import ODESolver
+from display import Display, terminal_feedback
+from libtools import device_mapper, load_profile
 
 torch.manual_seed(123)
 torch.set_printoptions(precision=10, sci_mode=False, linewidth=sys.maxsize)
@@ -20,7 +20,7 @@ def main():
     render = Display(WIDTH, HEIGHT)
     clock = pygame.time.Clock()
 
-    P = ParticleField(100, load_profile('carbon'), WIDTH, HEIGHT, dt, DEVICE)
+    P = ParticleField(64, load_profile('carbon'), WIDTH, HEIGHT, dt, DEVICE)
     solver = ODESolver(f=P.dynamics, device=DEVICE)
     solver.reset(P.state, t_start=0.0)
 
