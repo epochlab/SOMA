@@ -25,32 +25,32 @@ elements:
     electrons: 3
     density: 0.534
     electronegativity: 0.98
-    atomic_radius: 167
+    atomic_radius: 152
   - name: beryllium
     symbol: Be
     atomic_number: 4
     atomic_weight: 9.0122
     protons: 4
     electrons: 4
-    density: 1.848
+    density: 1.845
     electronegativity: 1.57
     atomic_radius: 112
   - name: boron
     symbol: B
     atomic_number: 5
-    atomic_weight: 10.81
+    atomic_weight: 10.811
     protons: 5
     electrons: 5
     density: 2.34
     electronegativity: 2.04
-    atomic_radius: 87
+    atomic_radius: 85
   - name: carbon
     symbol: C
     atomic_number: 6
     atomic_weight: 12.011
     protons: 6
     electrons: 6
-    density: 2.267
+    density: 2.2
     electronegativity: 2.55
     atomic_radius: 70
   - name: nitrogen
@@ -59,7 +59,7 @@ elements:
     atomic_weight: 14.007
     protons: 7
     electrons: 7
-    density: 0.001251
+    density: 1.2506
     electronegativity: 3.04
     atomic_radius: 65
   - name: oxygen
@@ -68,6 +68,6 @@ elements:
     atomic_weight: 15.999
     protons: 8
     electrons: 8
-    density: 0.001429
+    density: 1.429
     electronegativity: 3.44
     atomic_radius: 60

@@ -21,7 +21,7 @@ class ParticleField:
 
     def dynamics(self, state, t):
         vel = self.boundary_collisions()
-        vel -= self.interact(2 * self.profile['atomic_radius'])  # +:attract | -:repel
+        vel -= self.interact(2 * self.profile['atomic_radius'])  # -:attract | +:repel
         return torch.cat((vel, torch.zeros_like(vel)), dim=1) # dx_dt | p:vel, v:accel
         
     def boundary_collisions(self):
@@ -39,7 +39,7 @@ class ParticleField:
         dist[dist == 0] = float('inf')
         mag = self._attenuation(dist, r)
         norm_dir = dir / dist[..., None]
-        force = mag[..., None] * norm_dir * self.profile['atomic_weight']
+        force = (mag[..., None] * norm_dir) * self.profile['atomic_weight'] # F = ma
         return force.sum(dim=1)
 
     def _attenuation(self, dist, r):
