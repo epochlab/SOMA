@@ -26,7 +26,7 @@ elements:
     density: 0.534
     electronegativity: 0.98
     atomic_radius: 167
-   - name: beryllium
+  - name: beryllium
     symbol: Be
     atomic_number: 4
     atomic_weight: 9.0122
