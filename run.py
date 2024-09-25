@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-from dataclasses import dataclass
-
 import pygame
 import torch
 
@@ -11,6 +9,7 @@ from engine import ODESolver
 from particle import ParticleField
 
 DEVICE = device_mapper()
+
 WIDTH, HEIGHT, FPS = 1024, 576, 120
 dt = 1/FPS
 
