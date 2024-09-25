@@ -9,7 +9,7 @@ from display import Display, terminal_feedback
 from engine import ODESolver
 from particle import ParticleField
 
-# torch.manual_seed(123)
+torch.manual_seed(123)
 torch.set_printoptions(linewidth=sys.maxsize)
 
 DEVICE = device_mapper()
