@@ -10,7 +10,7 @@ from engine import ODESolver
 from particle import ParticleField
 
 torch.manual_seed(123)
-torch.set_printoptions(linewidth=sys.maxsize)
+torch.set_printoptions(precision=10, sci_mode=False, linewidth=sys.maxsize)
 
 DEVICE = device_mapper()
 WIDTH, HEIGHT, FPS = 1024, 576, 120
@@ -20,7 +20,7 @@ def main():
     render = Display(WIDTH, HEIGHT)
     clock = pygame.time.Clock()
 
-    P = ParticleField(10, load_profile('helium'), WIDTH, HEIGHT, dt, DEVICE)
+    P = ParticleField(10, load_profile('hydrogen'), WIDTH, HEIGHT, dt, DEVICE)
     solver = ODESolver(f=P.dynamics, device=DEVICE)
     solver.reset(P.state, t_start=0.0)
 
@@ -31,13 +31,14 @@ def main():
                 return
 
         terminal_feedback(P, i)
-        render.draw(P.state[:, :2].cpu().numpy(), (255, 255, 255))
+        render.draw(P.state[:, :2], (255, 255, 255))
 
         with torch.no_grad():
             P.state[:], _ = solver.compute(dt, "euler")
 
         clock.tick(FPS)
         i += 1
+        # break
 
 if __name__ == "__main__":
     main()
