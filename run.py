@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import pygame
 import torch
 
@@ -8,8 +9,10 @@ from display import Display, terminal_feedback
 from engine import ODESolver
 from particle import ParticleField
 
-DEVICE = device_mapper()
+# torch.manual_seed(123)
+torch.set_printoptions(linewidth=sys.maxsize)
 
+DEVICE = device_mapper()
 WIDTH, HEIGHT, FPS = 1024, 576, 120
 dt = 1/FPS
 

@@ -19,6 +19,10 @@ class ParticleField:
     def dynamics(self, state, t):
         pos, vel = state[:, :2], state[:, 2:4]
         vel = self.boundary_collisions(vel, pos)
+        idx, _ = self.neighbour(r=100.0)
+        print(idx)
+
+
         return torch.cat((vel, torch.zeros_like(vel)), dim=1) # dx_dt | p:vel, v:accel
         
     def boundary_collisions(self, vel, pos):
@@ -27,3 +31,12 @@ class ParticleField:
         vel[mask_x, 0] *= -1
         vel[mask_y, 1] *= -1
         return vel
+    
+    def neighbour(self, r):
+        pnts = self.state[:, :2]  
+        diff = pnts[:, None, :] - pnts[None, :, :] 
+        dist = torch.sqrt((diff ** 2).sum(dim=-1))
+        # dist = torch.tril(dist) # unique pairs
+        mask = (dist < r) & (dist > 0.0)
+        idx = torch.nonzero(mask, as_tuple=False)
+        return idx, dist
