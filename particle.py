@@ -36,6 +36,7 @@ class ParticleField:
         pos = self.state[:, :2]
         dir = pos[:, None, :] - pos[None, :, :]
         dist = self._distance()
+        dist[dist == 0] = float('inf')
         mag = self._attenuation(dist, r)
         norm_dir = dir / dist[..., None]
         force = mag[..., None] * norm_dir * self.profile['atomic_weight']
@@ -47,6 +48,4 @@ class ParticleField:
     def _distance(self):
         pos = self.state[:, :2]
         diff = pos[:, None] - pos[None, :]
-        dist = torch.sqrt((diff ** 2).sum(dim=-1))
-        dist[dist == 0] = float('inf')
-        return dist
+        return torch.sqrt((diff ** 2).sum(dim=-1))
