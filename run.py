@@ -20,7 +20,7 @@ def main():
     render = Display(WIDTH, HEIGHT)
     clock = pygame.time.Clock()
 
-    P = ParticleField(64, load_profile('nitrogen'), WIDTH, HEIGHT, dt, DEVICE)
+    P = ParticleField(100, load_profile('carbon'), WIDTH, HEIGHT, dt, DEVICE)
     solver = ODESolver(f=P.dynamics, device=DEVICE)
     solver.reset(P.state, t_start=0.0)
 
@@ -31,10 +31,10 @@ def main():
                 return
 
         terminal_feedback(P, i)
-        render.draw(P.state[:, :2], (255, 255, 255))
+        render.draw(P.state)
 
         with torch.no_grad():
-            P.state[:], _ = solver.compute(dt, "euler")
+            P.state[:], _ = solver.compute(dt, 'euler')
 
         clock.tick(FPS)
         i += 1
