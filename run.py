@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys
+import sys, time
 import pygame
 import torch
 
@@ -20,7 +20,7 @@ def main():
     render = Display(WIDTH, HEIGHT)
     clock = pygame.time.Clock()
 
-    P = ParticleField(64, load_profile('carbon'), WIDTH, HEIGHT, dt, DEVICE)
+    P = ParticleField(100, load_profile('carbon'), WIDTH, HEIGHT, dt, DEVICE)
     solver = ODESolver(f=P.dynamics, device=DEVICE)
     solver.reset(P.state, t_start=0.0)
 
@@ -29,16 +29,23 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
-
-        terminal_feedback(P, i)
+            
+        t0 = time.time()
         render.draw(P.state)
 
+        t1 = time.time()
         with torch.no_grad():
             P.state[:], _ = solver.compute(dt, 'euler')
 
+        t2 = time.time()
+        terminal_feedback(P, i)
+        print(f"Render time: {(t1 - t0) * 1000:.2f} ms")
+        print(f"Simulation time: {(t2 - t1) * 1000:.2f} ms")
+
         clock.tick(FPS)
         i += 1
-        # break
+
+        if i > 100: break
 
 if __name__ == "__main__":
     main()

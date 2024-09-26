@@ -50,6 +50,8 @@ def terminal_feedback(pf, i):
         print(f"{i:<6} | ({pos[i][0]:<8.3f}, {pos[i][1]:<8.3f}) | "
               f"({vel[i][0]:<8.3f}, {vel[i][1]:<8.3f})")
         
+    print("")
+        
 def attrib_Cd(attrib, col):
     cmap = cm.get_cmap(col)
     colors = cmap(attrib.cpu().numpy())[:, :3]
