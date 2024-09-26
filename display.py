@@ -16,8 +16,8 @@ class Display(object):
     def draw(self, state):
         self.surface.fill((0, 0, 0))
 
-        vel = torch.norm(state[:,2:], dim=1) / 1e3 # Fix static mapping!!
-        col = attrib_Cd(vel, 'magma')
+        vel = 1- torch.norm(state[:,2:], dim=1) / 1e3 # Fix static mapping!!
+        col = attrib_Cd(vel, 'Blues')
 
         pts = state[:,:2].cpu().numpy()
         for i, p in enumerate(pts):
@@ -26,7 +26,7 @@ class Display(object):
             pygame.draw.circle(self.surface, tuple(col[i]), (x, y), 2)
         pygame.display.flip()
 
-def terminal_feedback(pf, i):
+def terminal_feedback(pf, i, diag):
     N = pf.state.shape[0]
     pos = pf.state[:, :2].cpu().numpy()
     vel = pf.state[:, 2:4].cpu().numpy()
@@ -43,6 +43,8 @@ def terminal_feedback(pf, i):
     print(f"N Particles: {pf.N}\n")
 
     print(f"Frame: {i}\n")
+    print(f"Render time: {(diag[1] - diag[0]) * 1e3:.2f}ms")
+    print(f"Simulation time: {(diag[2] - diag[1]) * 1e3:.2f}ms\n")
 
     print(f"{'ID':<6} | {'Pos (x,y)':<20} | {'Vel (vx,vy)':<20}")
     print("-" * 60)
@@ -50,8 +52,6 @@ def terminal_feedback(pf, i):
     for i in range(len(pf.state)):
         print(f"{i:<6} | ({pos[i][0]:<8.3f}, {pos[i][1]:<8.3f}) | "
               f"({vel[i][0]:<8.3f}, {vel[i][1]:<8.3f})")
-        
-    print("")
         
 def attrib_Cd(attrib, col):
     cmap = cm.get_cmap(col)
