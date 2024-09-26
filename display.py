@@ -16,10 +16,11 @@ class Display(object):
     def draw(self, state):
         self.surface.fill((0, 0, 0))
 
-        speed = torch.norm(state[:,2:], dim=1) / 1e3 # Fix static mapping!!
-        col = attrib_Cd(speed, 'magma')
+        vel = torch.norm(state[:,2:], dim=1) / 1e3 # Fix static mapping!!
+        col = attrib_Cd(vel, 'magma')
 
-        for i, p in enumerate(state[:,:2]):
+        pts = state[:,:2].cpu().numpy()
+        for i, p in enumerate(pts):
             x, y = int(p[0]), int(p[1])
             # pygame.draw.circle(self.surface, (255,255,255), (x, y), 2)
             pygame.draw.circle(self.surface, tuple(col[i]), (x, y), 2)

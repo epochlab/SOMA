@@ -20,7 +20,7 @@ def main():
     render = Display(WIDTH, HEIGHT)
     clock = pygame.time.Clock()
 
-    P = ParticleField(100, load_profile('carbon'), WIDTH, HEIGHT, dt, DEVICE)
+    P = ParticleField(64, load_profile('carbon'), WIDTH, HEIGHT, dt, DEVICE)
     solver = ODESolver(f=P.dynamics, device=DEVICE)
     solver.reset(P.state, t_start=0.0)
 
@@ -39,8 +39,8 @@ def main():
 
         t2 = time.time()
         terminal_feedback(P, i)
-        print(f"Render time: {(t1 - t0) * 1000:.2f} ms")
-        print(f"Simulation time: {(t2 - t1) * 1000:.2f} ms")
+        print(f"Render time: {(t1 - t0) * 1e3:.2f}ms")
+        print(f"Simulation time: {(t2 - t1) * 1e3:.2f}ms")
 
         clock.tick(FPS)
         i += 1
