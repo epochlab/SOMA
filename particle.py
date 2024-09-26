@@ -16,14 +16,13 @@ class ParticleField:
 
     def _initialize(self):
         pI = (torch.rand(self.N, 2) * torch.tensor([self.width, self.height])).to(self.device)
-        vI = (torch.rand(self.N, 2) - 0.5).to(self.device) * 1000
+        vI = (torch.rand(self.N, 2) - 0.5).to(self.device) * 100
         return torch.cat((pI, vI), dim=1)
 
     def dynamics(self, state, t):
-        vel = self.state[:, 2:]
         vel = self.boundary_collisions()
-        vel -= self.interact(2 * self.profile['atomic_radius'])  # -:attract | +:repel
-        return torch.cat((vel, torch.zeros_like(vel)), dim=1) # dx_dt | p:vel, v:accel
+        acc = -self.interact(2 * self.profile['atomic_radius'])  # -:attract | +:repel
+        return torch.cat((vel, acc), dim=1) # dx_dt | p:vel, v:accel
     
     def boundary_collisions(self):
         pos, vel = self.state[:, :2], self.state[:, 2:]
@@ -40,13 +39,14 @@ class ParticleField:
         dir = pos[:, None] - pos[None, :]
         dist = self._distance()
         dist[dist == 0] = float('inf')
-        mag = self._attenuation(dist, r)
+        mag = self._attenuation(dist, r, 'inverse')
         norm_dir = dir / dist[..., None]
         force = (mag[..., None] * norm_dir) * self.profile['atomic_weight'] # F = ma
         return force.sum(dim=1)
 
-    def _attenuation(self, dist, r):
-        return torch.clamp(1 - (dist + 1e-06) / r, min=0) # f(d) = max(0, 1 - d/r)
+    def _attenuation(self, dist, r, falloff):
+        if falloff == 'linear': return torch.clamp(1 - (dist + 1e-06) / r, min=0, max=1)
+        if falloff == 'inverse': return torch.clamp(r / (dist**2 + r), min=0)
 
     def _distance(self):
         pos = self.state[:, :2]

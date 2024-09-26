@@ -16,8 +16,8 @@ class Display(object):
     def draw(self, state):
         self.surface.fill((0, 0, 0))
 
-        vel = 1- torch.norm(state[:,2:], dim=1) / 1e3 # Fix static mapping!!
-        col = attrib_Cd(vel, 'Blues')
+        vel = torch.norm(state[:,2:], dim=1) / 1e2 # Fix static mapping!!
+        col = attrib_Cd(vel, 'magma')
 
         pts = state[:,:2].cpu().numpy()
         for i, p in enumerate(pts):
