@@ -39,7 +39,6 @@ def main():
 
         t2 = time.time()
         terminal_feedback(P, i, (t0, t1, t2))
-
         clock.tick(FPS)
         i += 1
         # break
